@@ -1,0 +1,8 @@
+.vscode/
+archive/
+storage/
+
+config.yaml
+config.yml
+bin/main
+Makefile.bak

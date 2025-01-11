@@ -1,0 +1,593 @@
+basePath: /
+definitions:
+  cloudflare_api.RequestInput:
+    properties:
+      domain:
+        example: sub.example.com
+        type: string
+    type: object
+  cloudflare_api.RequestInputAddDomain:
+    properties:
+      domain:
+        example: example.com
+        type: string
+      username:
+        example: exampleusername
+        type: string
+    type: object
+  deploy_api.RequestInput:
+    properties:
+      domain:
+        example: example.com
+        type: string
+      email:
+        example: sample@example.com
+        type: string
+      merchant_name:
+        example: Example Name
+        type: string
+      username:
+        example: exampleusername
+        type: string
+    type: object
+  jenkins_api.RequestInput:
+    properties:
+      username:
+        example: exampleusername
+        type: string
+    type: object
+  portainer_api.RequestInput:
+    properties:
+      username:
+        example: exampleusername
+        type: string
+    type: object
+  utils.BadRequest:
+    properties:
+      error:
+        example: string
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: "null"
+        type: string
+      status:
+        example: 400
+        type: integer
+      success:
+        example: false
+        type: boolean
+    type: object
+  utils.FoundFail:
+    properties:
+      error:
+        example: message
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: "null"
+        type: string
+      status:
+        example: 302
+        type: integer
+      success:
+        example: false
+        type: boolean
+    type: object
+  utils.FoundSuccess:
+    properties:
+      error:
+        example: "null"
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: message
+        type: string
+      status:
+        example: 302
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.InternalServerError:
+    properties:
+      error:
+        example: message
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: "null"
+        type: string
+      status:
+        example: 500
+        type: integer
+      success:
+        example: false
+        type: boolean
+    type: object
+  utils.Success:
+    properties:
+      error:
+        example: "null"
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: message
+        type: string
+      status:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.SuccessDeploy:
+    properties:
+      error:
+        example: "null"
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        properties:
+          cloudflare:
+            example: success add domain sub.example.com
+            type: string
+          jenkins:
+            example: success deploy jenkins with status build in proccess
+            type: string
+          portainer:
+            example: success deploy portainer
+            type: string
+        type: object
+      status:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: Documentation for Automate Deployment Restful API
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Automate Deployment API
+  version: "1.0"
+paths:
+  /api/v1/deploy/start:
+    post:
+      consumes:
+      - application/json
+      description: Deployment to Cloudflare, Portainer, and Jenkins (Support rollback
+        action if failed)
+      parameters:
+      - description: User Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/deploy_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.SuccessDeploy'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Deploy All Third Party Environment
+      tags:
+      - Deploy
+  /api/v1/domain/add:
+    post:
+      consumes:
+      - application/json
+      description: Add domain to cloudflare tunnel and dns record
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cloudflare_api.RequestInputAddDomain'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Add domain to cloudflare
+      tags:
+      - Domain
+  /api/v1/domain/check:
+    post:
+      consumes:
+      - application/json
+      description: Get domain is available or unavailable, only support for cloudflare
+        providers
+      parameters:
+      - description: User Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cloudflare_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundSuccess'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Get domain is available
+      tags:
+      - Domain
+  /api/v1/domain/is-not-exists:
+    post:
+      consumes:
+      - application/json
+      description: True if domain is not exist
+      parameters:
+      - description: Body Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cloudflare_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundFail'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: True if domain is not exist
+      tags:
+      - Domain
+  /api/v1/domain/nameserver:
+    post:
+      consumes:
+      - application/json
+      description: Get cloudflare nameserver of base domain
+      parameters:
+      - description: Body Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cloudflare_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundSuccess'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Get cloudflare nameserver
+      tags:
+      - Domain
+  /api/v1/domain/register-status:
+    post:
+      consumes:
+      - application/json
+      description: Check status register domain with status `pending` and `active`
+      parameters:
+      - description: User Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cloudflare_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.SuccessDeploy'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundSuccess'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Get status register domain
+      tags:
+      - Domain
+  /api/v1/domain/status:
+    post:
+      consumes:
+      - application/json
+      description: Are domain is accessible or still cannot access
+      parameters:
+      - description: User Data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cloudflare_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundSuccess'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Get status domain
+      tags:
+      - Domain
+  /api/v1/mobile/is-not-exists:
+    post:
+      consumes:
+      - application/json
+      description: True if item is not exist
+      parameters:
+      - description: Body Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/jenkins_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundFail'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: True if item is not exist
+      tags:
+      - Mobile
+  /api/v1/mobile/status:
+    post:
+      consumes:
+      - application/json
+      description: Check status of mobile builder with return 'success', 'no build',
+        'failed', 'unknown'
+      parameters:
+      - description: Body Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/jenkins_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Check status of mobile builder
+      tags:
+      - Mobile
+  /api/v1/system/is-not-exists:
+    post:
+      consumes:
+      - application/json
+      description: True if stack is not exist
+      parameters:
+      - description: Body Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/portainer_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundFail'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: True if stack is not exist
+      tags:
+      - System
+  /api/v1/system/stack:
+    get:
+      consumes:
+      - application/json
+      description: Get all stack from portainer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundSuccess'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Get all system stack
+      tags:
+      - System
+  /api/v1/system/status:
+    post:
+      consumes:
+      - application/json
+      description: Get status of stack
+      parameters:
+      - description: Body Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/portainer_api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "302":
+          description: Found
+          schema:
+            $ref: '#/definitions/utils.FoundSuccess'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Get status of stack
+      tags:
+      - System
+securityDefinitions:
+  X-Token:
+    description: Input your token authorized
+    in: header
+    name: X-Token
+    type: apiKey
+swagger: "2.0"
