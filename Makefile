@@ -13,3 +13,7 @@ dev:
 .PHONY: run
 run:
 	@./bin/main
+
+.PHONY: build-docker
+build-docker:
+	@docker build -t autodeploy-api:latest .
