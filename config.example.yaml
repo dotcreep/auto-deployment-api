@@ -1,37 +1,37 @@
 ---
-cloudflare:
-  key:
-  email:
-  base_url: https://api.cloudflare.com/client/v4
-  account_id:
-  tunnel_id:
-portainer:
-  base_url:
-  api_key:
-  swarm_id:
-  endpointId:
-  username:
-  type: swarm
-  method: string
-  fromAppTemplate: true
-jenkins:
-  base_url:
-  username:
-  api_key:
-  domain_credentials:
-  api_url:
-  prefix_credentials:
 config:
+  chat_api:
+  domain_api:
   image_api:
   image_web:
-  chat_api:
-  regis_admin:
-  regis_merch:
-  post_mail:
-  token_regis:
-  x_token:
-  x_api_key:
-  domain_api:
-  port_api: 18081
   path_client: /nfs/client
   path_environment: /nfs/environment
+  port_api: 18081
+  post_mail:
+  regis_admin:
+  regis_merch:
+  token_regis:
+  x_api_key:
+  x_token:
+cloudflare:
+  account_id:
+  base_url: https://api.cloudflare.com/client/v4
+  email:
+  key:
+  tunnel_id:
+jenkins:
+  api_key:
+  api_url:
+  base_url:
+  domain_credentials:
+  prefix_credentials:
+  username:
+portainer:
+  api_key:
+  base_url:
+  endpointId:
+  fromAppTemplate: true
+  method: string
+  swarm_id:
+  type: swarm
+  username:
