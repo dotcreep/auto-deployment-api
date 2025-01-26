@@ -2,7 +2,6 @@ package cloudflare_api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
@@ -25,7 +24,6 @@ func GetDomainIsNotExists(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	yamlConfig, err := utils.Open()
 	if err != nil {
-		log.Println(err)
 		Json.NewResponse(false, w, nil, "failed load config", http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -42,20 +40,17 @@ func GetDomainIsNotExists(w http.ResponseWriter, r *http.Request) {
 		var data map[string]interface{}
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
-			log.Println(err)
 			Json.NewResponse(false, w, nil, "failed parse body data", http.StatusInternalServerError, err)
 			return
 		}
 		d, ok := data["domain"].(string)
 		if !ok {
-			log.Println("domain is required")
 			Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, nil)
 			return
 		}
 		domain = d
 	}
 	if domain == "" {
-		log.Println("domain is required")
 		Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, nil)
 		return
 	}
@@ -74,7 +69,7 @@ func GetDomainIsNotExists(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if domainFound {
-		Json.NewResponse(false, w, nil, "domain is exists", http.StatusFound, true)
+		Json.NewResponse(false, w, false, "domain sudah terpakai", http.StatusOK, "telah dipakai")
 		return
 	}
 
@@ -99,8 +94,8 @@ func GetDomainIsNotExists(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if domainFound {
-		Json.NewResponse(false, w, nil, "domain is exists", http.StatusFound, true)
+		Json.NewResponse(false, w, false, "domain sudah terpakai", http.StatusOK, "telah dipakai")
 		return
 	}
-	Json.NewResponse(true, w, true, "domain is ready for create", http.StatusOK, nil)
+	Json.NewResponse(true, w, true, "domain dapat dibuat", http.StatusOK, nil)
 }

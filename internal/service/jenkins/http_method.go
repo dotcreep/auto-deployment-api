@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -98,9 +97,8 @@ func (j *Jenkins) DeleteJenkins(ctx context.Context, data *JenkinsData) (*http.R
 	resp.Body.Close()
 	b, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	return resp, nil
 }

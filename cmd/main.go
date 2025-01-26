@@ -21,18 +21,15 @@ func KeyMiddlewareOne(next http.Handler) http.Handler {
 		Json := utils.Json{}
 		ymlconf, err := utils.Open()
 		if err != nil {
-			log.Println(err)
 			Json.NewResponse(false, nil, nil, "config.yml not found", http.StatusInternalServerError, nil)
 			return
 		}
 		apiKey := ymlconf.Config.XToken
 		if apiKey == "" {
-			log.Println("token not found")
 			Json.NewResponse(false, w, nil, "token not found", http.StatusUnauthorized, nil)
 			return
 		}
 		if apiKey != r.Header.Get("X-Token") {
-			log.Println("unauthorized")
 			Json.NewResponse(false, w, nil, "unauthorized", http.StatusUnauthorized, nil)
 			return
 		}
@@ -45,18 +42,15 @@ func KeyMiddlewareTwo(next http.Handler) http.Handler {
 		Json := utils.Json{}
 		ymlconf, err := utils.Open()
 		if err != nil {
-			log.Println(err)
-			Json.NewResponse(false, nil, nil, "config.yml not found", http.StatusInternalServerError, nil)
+			Json.NewResponse(false, nil, nil, "config.yml not found", http.StatusInternalServerError, err.Error())
 			return
 		}
 		apiKey := ymlconf.Config.XTokenX
 		if apiKey == "" {
-			log.Println("token not found")
 			Json.NewResponse(false, w, nil, "token not found", http.StatusUnauthorized, nil)
 			return
 		}
 		if apiKey != r.Header.Get("X-Token") {
-			log.Println("unauthorized")
 			Json.NewResponse(false, w, nil, "unauthorized", http.StatusUnauthorized, nil)
 			return
 		}
@@ -79,8 +73,7 @@ func main() {
 	Json := utils.Json{}
 	ymlconf, err := utils.Open()
 	if err != nil {
-		log.Println(err)
-		Json.NewResponse(false, nil, nil, "config.yml not found", http.StatusInternalServerError, nil)
+		Json.NewResponse(false, nil, nil, "config.yml not found", http.StatusInternalServerError, err.Error())
 		return
 	}
 	port := ymlconf.Config.PORT

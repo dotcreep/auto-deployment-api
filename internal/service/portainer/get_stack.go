@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -24,9 +23,8 @@ func (p *Portainer) GetStack(ctx context.Context) (*PortainerResult, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 
 	// resp.Body = io.NopCloser(bytes.NewReader(b))

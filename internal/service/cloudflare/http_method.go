@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -43,13 +42,11 @@ func (c *Cloudflare) GetCloudflare(ctx context.Context, url string) (*http.Respo
 	if err != nil {
 		return nil, err
 	}
+	resp.Body = io.NopCloser(bytes.NewReader(b))
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
-		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
-	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil
 }
 
@@ -82,9 +79,8 @@ func (c *Cloudflare) PostCloudflare(ctx context.Context, url string, data io.Rea
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil
@@ -119,9 +115,8 @@ func (c *Cloudflare) PutCloudflare(ctx context.Context, url string, data io.Read
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil
@@ -149,14 +144,12 @@ func (c *Cloudflare) DeleteCloudflare(ctx context.Context, url string) (*http.Re
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil

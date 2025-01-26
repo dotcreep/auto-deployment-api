@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -33,8 +32,7 @@ func AddDomain(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	yamlConfig, err := utils.Open()
 	if err != nil {
-		log.Println("config.yml not found")
-		Json.NewResponse(false, w, nil, "config.yml not found", http.StatusInternalServerError, nil)
+		Json.NewResponse(false, w, nil, "config.yml not found", http.StatusInternalServerError, err.Error())
 		return
 	}
 	ctx, cancel := utils.Cfgx{}.DefaultTimeout()

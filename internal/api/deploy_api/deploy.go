@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -101,8 +100,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	yamlConfig, err := utils.Open()
 	if err != nil {
-		log.Println("config.yml not found")
-		Json.NewResponse(false, w, nil, "config.yml not found", http.StatusInternalServerError, nil)
+		Json.NewResponse(false, w, nil, "config.yml not found", http.StatusInternalServerError, err.Error())
 		return
 	}
 	ctx, cancel := utils.Cfgx{}.LongTimeout()
@@ -114,7 +112,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		Json.NewResponse(false, w, nil, err.Error(), http.StatusBadRequest, nil)
+		Json.NewResponse(false, w, nil, "unable read request", http.StatusBadRequest, err.Error())
 		return
 	}
 	defer r.Body.Close()
@@ -122,7 +120,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	var requestData RequestInput
 	err = json.Unmarshal(body, &requestData)
 	if err != nil {
-		Json.NewResponse(false, w, nil, err.Error(), http.StatusBadRequest, nil)
+		Json.NewResponse(false, w, nil, "unable unmarshal request", http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -135,32 +133,27 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	*/
 	usernameClient := requestData.Username
 	if usernameClient == "" {
-		log.Println("username is required")
-		Json.NewResponse(false, w, nil, "username is required", http.StatusBadRequest, "need username")
+		Json.NewResponse(false, w, nil, "username is required", http.StatusBadRequest, nil)
 		return
 	}
 	emailClient := requestData.Email
 	if emailClient == "" {
-		log.Println("email is required")
-		Json.NewResponse(false, w, nil, "email is required", http.StatusBadRequest, "need email")
+		Json.NewResponse(false, w, nil, "email is required", http.StatusBadRequest, nil)
 		return
 	}
 	merchantName := requestData.MerchantName
 	if merchantName == "" {
-		log.Println("merchant_name is required")
-		Json.NewResponse(false, w, nil, "merchant_name is required", http.StatusBadRequest, "need merchant name")
+		Json.NewResponse(false, w, nil, "merchant_name is required", http.StatusBadRequest, nil)
 		return
 	}
 	domainClient := requestData.Domain
 	if domainClient == "" {
-		log.Println("domain is required")
-		Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, "need domain")
+		Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, nil)
 		return
 	}
 	tunnelId := yamlConfig.Cloudflare.TunnelID
 	if tunnelId == "" {
-		log.Println("tunnel_id is required")
-		Json.NewResponse(false, w, nil, "tunnel_id is required", http.StatusBadRequest, "need tunnel id")
+		Json.NewResponse(false, w, nil, "tunnel_id is required", http.StatusBadRequest, nil)
 		return
 	}
 	domainPath := "" // requestData["domain_path"].(string)
@@ -168,8 +161,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	loadBalancer := false
 	apiURLClient := yamlConfig.Jenkins.APIURL
 	if apiURLClient == "" {
-		log.Println("api_url is required")
-		Json.NewResponse(false, w, nil, "api_url is required", http.StatusBadRequest, "need api url")
+		Json.NewResponse(false, w, nil, "api_url is required", http.StatusBadRequest, nil)
 		return
 	}
 
@@ -185,17 +177,17 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	// 2.2. Create connection thirdparty
 	connectcf, err := connectCloudflare()
 	if err != nil {
-		Json.NewResponse(false, w, nil, err.Error(), http.StatusInternalServerError, nil)
+		Json.NewResponse(false, w, nil, "failed connect cloudflare", http.StatusInternalServerError, err.Error())
 		return
 	}
 	connectpt, err := connectPortainer()
 	if err != nil {
-		Json.NewResponse(false, w, nil, err.Error(), http.StatusInternalServerError, nil)
+		Json.NewResponse(false, w, nil, "failed connect portainer", http.StatusInternalServerError, err.Error())
 		return
 	}
 	connectjen, err := connectJenkins()
 	if err != nil {
-		Json.NewResponse(false, w, nil, err.Error(), http.StatusInternalServerError, nil)
+		Json.NewResponse(false, w, nil, "failed connect jenkins", http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -209,7 +201,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	for _, path := range pathListEnvCreated {
 		err = service.CreateDir("/nfs/environment", usernameClient, path)
 		if err != nil {
-			Json.NewResponse(false, w, nil, err.Error(), http.StatusInternalServerError, nil)
+			Json.NewResponse(false, w, nil, "failed create directory", http.StatusInternalServerError, err.Error())
 			return
 		}
 	}
@@ -224,7 +216,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	for _, path := range pathListCreated {
 		err = service.CreateDir("/nfs/client", usernameClient, path)
 		if err != nil {
-			Json.NewResponse(false, w, nil, err.Error(), http.StatusInternalServerError, nil)
+			Json.NewResponse(false, w, nil, "failed create directory", http.StatusInternalServerError, err.Error())
 			return
 		}
 	}
@@ -244,7 +236,6 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	resCloudflare, err := DeployCloudflare(ctx, cloudflare)
 	if err != nil {
 		defer connectcf.RollbackAddDomain(ctx, cloudflare)
-		log.Println(err)
 		Json.NewResponse(false, w, nil, "failed add domain", http.StatusBadRequest, err.Error())
 		return
 	}
@@ -270,13 +261,13 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 			PackageName: fmt.Sprintf("%s.%s.%s", reverseDomain[0], reverseDomain[1], usernameClient),
 			LabelApps:   merchantName,
 		},
-		WebApi: yamlConfig.Config.ChatAPI,
+		WebApi:   yamlConfig.Config.ChatAPI,
+		AppTitle: merchantName,
 	}
 
 	// Generate ENV for Client
 	dataGenerator, err := cli.Generator(genEnv)
 	if err != nil {
-		log.Println(err)
 		Json.NewResponse(false, w, nil, "failed generate env", http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -322,7 +313,6 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		defer connectcf.RollbackAddDomain(ctx, cloudflare)
 		defer connectpt.RollbackAddStack(ctx, usernameClient)
-		log.Println(err)
 		Json.NewResponse(false, w, nil, "failed add container", http.StatusBadRequest, err.Error())
 		return
 	}
@@ -381,7 +371,6 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 		defer connectcf.RollbackAddDomain(ctx, cloudflare)
 		defer connectpt.RollbackAddStack(ctx, usernameClient)
 		defer connectjen.RollbackAddItem(ctx, JenInput)
-		log.Println("error deploy jenkins, err:", err)
 		Json.NewResponse(false, w, nil, "failed add item", http.StatusBadRequest, err.Error())
 		return
 	}

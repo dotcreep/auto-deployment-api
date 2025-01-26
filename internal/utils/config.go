@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -37,6 +36,8 @@ type PortainerConfig struct {
 	Method          string `yaml:"method"`
 	FromAppTemplate bool   `yaml:"fromAppTemplate"`
 	EndpointId      int    `yaml:"endpointId"`
+	MaxClientWeb    int    `yaml:"max_client_web"`
+	MaxClientDB     int    `yaml:"max_client_db"`
 }
 
 type commonConfig struct {
@@ -89,13 +90,11 @@ func Open() (*YamlStruct, error) {
 
 	data, err := os.ReadFile(pathFile)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	var config YamlStruct
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	return &config, nil

@@ -114,15 +114,19 @@ type ResultInfo struct {
 	TotalCount int `json:"total_count,omitempty"`
 }
 
+type resultDomainZone struct {
+	Result []domainZone `json:"result"`
+}
+
 type domainZone struct {
-	ID          string      `json:"id,omitempty"`
-	Name        string      `json:"name,omitempty"`
-	NameServers interface{} `json:"name_servers,omitempty"`
-	Status      string      `json:"status,omitempty"`
+	ID          string      `json:"id"`
+	Name        string      `json:"name"`
+	NameServers interface{} `json:"name_servers"`
+	Status      string      `json:"status"`
 	Plan        struct {
-		Name  string  `json:"name,omitempty"`
-		Price float64 `json:"price,omitempty"`
-	} `json:"plan,omitempty"`
+		Name  string  `json:"name"`
+		Price float64 `json:"price"`
+	} `json:"plan"`
 }
 
 // Response DNS Records

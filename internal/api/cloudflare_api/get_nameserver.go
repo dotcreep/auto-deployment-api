@@ -3,7 +3,6 @@ package cloudflare_api
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -19,7 +18,6 @@ import (
 // @Security		X-Token
 // @Param			body	body		RequestInput				true	"Body Input"
 // @Success		200		{object}	utils.Success				"Success"
-// @Success		302		{object}	utils.FoundSuccess			"Found"
 // @Failure		400		{object}	utils.BadRequest			"Bad request"
 // @Failure		500		{object}	utils.InternalServerError	"Internal server error"
 // @Router			/api/v1/domain/nameserver [post]
@@ -35,20 +33,17 @@ func GetNameserver(w http.ResponseWriter, r *http.Request) {
 		var data map[string]interface{}
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
-			log.Println(err)
-			Json.NewResponse(false, w, nil, "failed parse body data", http.StatusInternalServerError, err)
+			Json.NewResponse(false, w, nil, "failed parse body data", http.StatusInternalServerError, err.Error())
 			return
 		}
 		d, ok := data["domain"].(string)
 		if !ok {
-			log.Println("domain is required")
 			Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, nil)
 			return
 		}
 		domain = d
 	}
 	if domain == "" {
-		log.Println("domain is required")
 		Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, nil)
 		return
 	}
@@ -70,7 +65,6 @@ func GetNameserver(w http.ResponseWriter, r *http.Request) {
 
 	_, err := connect.GetZone(ctx, baseDomain)
 	if err != nil {
-		log.Println(err)
 		Json.NewResponse(false, w, nil, "failed get domain zone", http.StatusNotFound, err.Error())
 		return
 	}
@@ -79,9 +73,8 @@ func GetNameserver(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := connect.GetNameserver(ctx, data)
 	if err != nil {
-		log.Println(err)
-		Json.NewResponse(false, w, err.Error(), "nameserver is up to date", http.StatusOK, nil)
+		Json.NewResponse(false, w, res, "nameserver telah diatur", http.StatusOK, err.Error())
 		return
 	}
-	Json.NewResponse(true, w, res, "success get nameserver", http.StatusOK, nil)
+	Json.NewResponse(true, w, res, "berhasil mendapatkan nameserver", http.StatusOK, nil)
 }

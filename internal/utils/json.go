@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -29,4 +30,5 @@ func (j *Json) NewResponse(success bool, w http.ResponseWriter, result interface
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(j.newJson(success, result, message, status, error))
+	log.Println(j.newJson(success, result, message, status, error))
 }

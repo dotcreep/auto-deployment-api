@@ -5,6 +5,7 @@ import (
 
 	"github.com/dotcreep/go-automate-deploy/internal/generator"
 	"github.com/dotcreep/go-automate-deploy/internal/service"
+	"github.com/dotcreep/go-automate-deploy/internal/utils"
 )
 
 type ReturnGenerate struct {
@@ -21,6 +22,7 @@ type EGenerate struct {
 	ClientName       string
 	Email            string
 	WebApi           string
+	AppTitle         string
 }
 
 type EGenerateAndroid struct {
@@ -30,6 +32,7 @@ type EGenerateAndroid struct {
 }
 
 func Generator(g *EGenerate) (*ReturnGenerate, error) {
+	// This is area is copying file src to dist, always check with Deploy function
 	data := service.Environment{}
 	var Android string
 	var Web string
@@ -43,7 +46,7 @@ func Generator(g *EGenerate) (*ReturnGenerate, error) {
 	a.BaseWeb = g.BaseWebURL
 	a.Host = g.EGenerateAndroid.WebHost
 	a.LabelApps = g.EGenerateAndroid.LabelApps
-	a.PackageName = g.EGenerateAndroid.PackageName
+	a.PackageName = utils.GeneratePackageName(g.ClientName, g.EGenerateAndroid.WebHost)
 
 	// Web
 	e := &data.DataAPI
@@ -65,6 +68,7 @@ func Generator(g *EGenerate) (*ReturnGenerate, error) {
 	e.SuperUser.Password = generator.Password(10)
 	e.Merchant.Username = g.ClientName
 	e.Merchant.Password = generator.Password(10)
+	e.AppTitle = fmt.Sprintf("\"%s\"", g.AppTitle)
 	// Return
 
 	m.PathSource = "storage/src/android/.env"

@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/dotcreep/go-automate-deploy/internal/service/jenkins"
+	"github.com/dotcreep/go-automate-deploy/internal/utils"
 )
 
 func connectJenkins() (*jenkins.Jenkins, error) {
@@ -56,7 +57,6 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	// Check Domain of client
 	readDomain, err := connect.GetCredentialOperation(ctx, data, "ReadDomain")
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 	defer readDomain.Body.Close()
@@ -75,7 +75,6 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	// Check Domain of client
 	readAll, err := connect.GetCredentialOperation(ctx, data, "ReadAllCredentials")
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 	defer readAll.Body.Close()
@@ -97,17 +96,9 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	if err != nil {
 		return "", err
 	}
-	reverseDomain := strings.Split(domain, ".")
-	var idApps string
-	if len(reverseDomain) > 2 {
-		reverseDomain = reverseDomain[len(reverseDomain)-3:]
-		idApps = fmt.Sprintf("%s.%s.%s", reverseDomain[0], reverseDomain[1], reverseDomain[2])
-	} else {
-		reverseDomain = reverseDomain[len(reverseDomain)-2:]
-		idApps = fmt.Sprintf("%s.%s", reverseDomain[0], reverseDomain[1])
-	}
+	packageName := utils.GeneratePackageName(data.Name, domain)
 	// mId := strconv.Itoa(data.MerchantID)
-	replaceEnv := strings.ReplaceAll(string(fileContent), "<app_id>", fmt.Sprintf("%s.%s", idApps, data.Name))
+	replaceEnv := strings.ReplaceAll(string(fileContent), "<app_id>", packageName)
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<url_api>", data.APIURL)
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<url_web>", fmt.Sprintf("https://%s", domain))
 	// replaceEnv = strings.ReplaceAll(replaceEnv, "<merchant_id>", mId)
@@ -120,6 +111,7 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	}
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<label_name>", labelName)
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<host_name>", domain)
+	replaceEnv = strings.ReplaceAll(replaceEnv, "<app_title>", fmt.Sprintf("\"%s\"", data.MerchantName))
 	base64env := base64.StdEncoding.EncodeToString([]byte(replaceEnv))
 	xmlCred, err := os.Open("storage/src/jenkins/credentials.xml")
 	if err != nil {
@@ -136,10 +128,14 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	data.JenkinsCredentials.JenFiles.SecretBytes = base64env
 	data.JenkinsCredentials.JenFiles.Description = fmt.Sprintf("Environment for client %s", data.Name)
 	cred, err := connect.AddCredentials(data, "file")
-	if err != nil && cred.StatusCode == http.StatusConflict {
-		return "", errors.New("credentials already exists")
-	} else if err != nil || cred.StatusCode != http.StatusOK {
+	if err != nil {
 		return "", err
+	}
+	defer cred.Body.Close()
+	if cred.StatusCode == http.StatusConflict {
+		return "", errors.New("credentials already exists")
+	} else if cred.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("unexpected status code: %d", cred.StatusCode)
 	}
 	// Open Template and Apply
 	xmlFile, err := os.Open("storage/src/jenkins/config.xml")
@@ -154,9 +150,9 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	}
 	data.JenkinsItem.Description = data.Description
 	for x, v := range data.JenkinsItem.BuildWrappers {
-		for i, j := range v.SecretBinding.Bindings {
+		for i, j := range v.SecretBinding.FileBindings {
 			if j.Variable == "ENV" {
-				data.JenkinsItem.BuildWrappers[x].SecretBinding.Bindings[i].CredentialsId = data.JenkinsCredentials.JenFiles.Id
+				data.JenkinsItem.BuildWrappers[x].SecretBinding.FileBindings[i].CredentialsId = data.JenkinsCredentials.JenFiles.Id
 				break
 			}
 		}
@@ -167,7 +163,12 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 				v.Command, "client-x", fmt.Sprintf("client-%s", data.Name),
 			)
 			data.JenkinsItem.Builders[i].Command = newName
-			break
+		}
+		if strings.Contains(v.Command, "{{username}}") {
+			apkName := strings.ReplaceAll(
+				v.Command, "{{username}}", data.Name,
+			)
+			data.JenkinsItem.Builders[i].Command = apkName
 		}
 	}
 	job, _ := connect.GetJobOperation(data, "DetailStatus")
@@ -183,7 +184,6 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 
 	build, err := connect.PostJobOperation(data, "Build")
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 	defer build.Body.Close()

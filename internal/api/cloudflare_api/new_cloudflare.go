@@ -16,6 +16,7 @@ func newCloudflare() *cloudflare.Cloudflare {
 	cf := cloudflare.Cloudflare{}
 	yamlConfig, err := utils.Open()
 	if err != nil {
+		log.Println(err)
 		return nil
 	}
 	connect, err := cf.NewCloudflare(yamlConfig.Cloudflare.Key, yamlConfig.Cloudflare.Email)

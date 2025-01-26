@@ -56,8 +56,8 @@ func GetStatusOfItem(w http.ResponseWriter, r *http.Request) {
 	// 5. Get status of item
 	status, err := connect.GetStatusOfItem(ctx, requestData["username"].(string))
 	if err != nil {
-		Json.NewResponse(false, w, nil, err.Error(), http.StatusNotFound, "fail")
+		Json.NewResponse(false, w, "-", "gagal mendapatkan status item", http.StatusOK, err.Error())
 		return
 	}
-	Json.NewResponse(true, w, status, "success get status of item", http.StatusOK, nil)
+	Json.NewResponse(true, w, status, "berhasil mendapatkan status item", http.StatusOK, nil)
 }

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -29,7 +28,6 @@ func (j *Jenkins) GetStatusOfItem(ctx context.Context, username string) (*Status
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 

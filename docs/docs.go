@@ -325,7 +325,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/utils.SuccessDeploy"
+                            "$ref": "#/definitions/utils.Success"
                         }
                     },
                     "302": {

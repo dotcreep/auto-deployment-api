@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
@@ -88,10 +87,11 @@ type PreBuildCleanup struct {
 }
 
 type SecretBuildWrapper struct {
-	Bindings []FileBinding `xml:"bindings>org.jenkinsci.plugins.credentialsbinding.impl.FileBinding"`
+	FileBindings   []Binding `xml:"bindings>org.jenkinsci.plugins.credentialsbinding.impl.FileBinding"`
+	StringBindings []Binding `xml:"bindings>org.jenkinsci.plugins.credentialsbinding.impl.StringBinding"`
 }
 
-type FileBinding struct {
+type Binding struct {
 	CredentialsId string `xml:"credentialsId"`
 	Variable      string `xml:"variable"`
 }
@@ -337,9 +337,8 @@ func (j *Jenkins) AddDomainCredentials(data *JenkinsData) (*http.Response, error
 
 	b, _ := io.ReadAll(req.Body)
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		req.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 
 	return resp, nil
@@ -470,9 +469,8 @@ func (j *Jenkins) PostJobOperation(data *JenkinsData, action string) (*http.Resp
 
 	// b, _ := io.ReadAll(resp.Body)
 	// if resp.StatusCode != http.StatusOK {
-	// 	log.Println(string(b))
 	// 	resp.Body = io.NopCloser(bytes.NewReader(b))
-	// 	return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+	// 	return "", fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	// }
 	return resp, nil
 }

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -61,9 +60,8 @@ func (c *Cloudflare) DeleteDomainFromTunnelConfiguration(ctx context.Context, s 
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return "", fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	return fmt.Sprintf("Successfully delete domain %s from tunnel %s", s.Domain, s.TunnelID), nil
 }

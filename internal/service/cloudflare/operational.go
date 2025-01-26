@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -149,9 +148,8 @@ func (c *Cloudflare) AddDomainToTunnelConfiguration(ctx context.Context, s *Subd
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return "", fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 
 	return string(b), nil
@@ -214,9 +212,8 @@ func (c *Cloudflare) Delete(ctx context.Context, s *Subdomains) (string, error) 
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return "", fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return string(b), nil
@@ -280,9 +277,8 @@ func (c *Cloudflare) Register(ctx context.Context, s *Subdomains) (string, error
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return "", fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return string(b), nil
@@ -332,7 +328,7 @@ func (c *Cloudflare) AddDNSRecord(ctx context.Context, s *Subdomains) (string, e
 		Type    string `json:"type"`
 	}{
 		Comment: fmt.Sprintf("DNS for %s", s.Domain),
-		Content: s.TunnelID,
+		Content: fmt.Sprintf("%s.cfargotunnel.com", s.TunnelID),
 		Name:    s.Domain,
 		Proxied: true,
 		TTL:     3600,
@@ -353,9 +349,8 @@ func (c *Cloudflare) AddDNSRecord(ctx context.Context, s *Subdomains) (string, e
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return "", fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return string(b), nil

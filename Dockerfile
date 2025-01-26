@@ -8,8 +8,10 @@ RUN go mod download && go mod verify
 COPY . .
 
 RUN rm -rf archive config.yaml Makefile.bak
-RUN go build -v -o /usr/local/bin/app ./...
+RUN go build -v -o /usr/local/bin/app ./cmd
 
 VOLUME [ "storage/dist/" ]
+
+EXPOSE 18081
 
 CMD ["app"]

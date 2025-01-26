@@ -30,6 +30,7 @@ type DataAPI struct {
 	RootDatabase RootDatabase
 	URL          URL
 	Management   Management
+	AppTitle     string
 }
 
 type Django struct {
@@ -295,6 +296,9 @@ func (e *Environment) WebEnvironment(data *Management) (string, error) {
 	if e.DataAPI.URL.WebApi == "" {
 		return "", errors.New("web api url is required")
 	}
+	if e.DataAPI.AppTitle == "" {
+		return "", errors.New("app title is required")
+	}
 	if data.PathSource == "" {
 		return "", errors.New("path source is required")
 	}
@@ -326,10 +330,14 @@ func (e *Environment) WebEnvironment(data *Management) (string, error) {
 			line = fmt.Sprintf("DB_PASSWORD=%s", e.DataAPI.Laravel.Password)
 		} else if strings.HasPrefix(line, "BASE_API_WIL") {
 			line = fmt.Sprintf("BASE_API_WIL=%s", e.DataAPI.URL.API)
+		} else if strings.HasPrefix(line, "BASE_API_WEB") {
+			line = fmt.Sprintf("BASE_API_WEB=%s", e.DataAPI.URL.WebApi)
 		} else if strings.HasPrefix(line, "BASE_API") {
 			line = fmt.Sprintf("BASE_API=%s", e.DataAPI.URL.API)
 		} else if strings.HasPrefix(line, "CHAT_API") {
 			line = fmt.Sprintf("CHAT_API=%s", e.DataAPI.URL.WebApi)
+		} else if strings.HasPrefix(line, "APP_TITLE") {
+			line = fmt.Sprintf("APP_TITLE=%s", e.DataAPI.AppTitle)
 		}
 		lines = append(lines, line)
 	}

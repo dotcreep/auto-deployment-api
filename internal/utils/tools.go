@@ -26,3 +26,17 @@ func GetBaseDomain(domain string) string {
 	}
 	return baseDomain
 }
+
+func GeneratePackageName(username, domain string) string {
+	baseDomain := GetBaseDomain(domain)
+	reverseDomain := strings.Split(baseDomain, ".")
+	var idApps string
+	if len(reverseDomain) > 2 {
+		reverseDomain = reverseDomain[len(reverseDomain)-3:]
+		idApps = fmt.Sprintf("%s.%s.%s", reverseDomain[2], reverseDomain[1], reverseDomain[0])
+	} else {
+		reverseDomain = reverseDomain[len(reverseDomain)-2:]
+		idApps = fmt.Sprintf("%s.%s", reverseDomain[1], reverseDomain[0])
+	}
+	return fmt.Sprintf("%s.%s", idApps, username)
+}

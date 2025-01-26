@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -36,9 +35,8 @@ func (p *Portainer) GetPortainer(ctx context.Context, url string) (*http.Respons
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil
@@ -70,9 +68,8 @@ func (p *Portainer) PostPortainer(ctx context.Context, url string, data io.Reade
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil
@@ -107,9 +104,8 @@ func (p *Portainer) PutPortainer(ctx context.Context, url string, data io.Reader
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil
@@ -141,9 +137,8 @@ func (p *Portainer) DeletePortainer(ctx context.Context, url string) (*http.Resp
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil

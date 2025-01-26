@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
@@ -69,9 +68,8 @@ func (p *Portainer) AddStack(name string, input *CustomInput) (*http.Response, e
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(string(b))
 		resp.Body = io.NopCloser(bytes.NewReader(b))
-		return nil, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(b))
 	return resp, nil
