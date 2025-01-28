@@ -55,6 +55,7 @@ func DeployCloudflare(ctx context.Context, data *cloudflare.Subdomains) (string,
 	}
 	// For new Domain
 	if domainTypes == "Domain" {
+		// This is for new domain
 		_, err := connect.GetZone(ctx, baseDomain)
 		if err != nil {
 			_, errData := connect.Register(ctx, data)
@@ -67,7 +68,7 @@ func DeployCloudflare(ctx context.Context, data *cloudflare.Subdomains) (string,
 			return "", err
 		}
 		if zone.Status == "pending" {
-			return "", errors.New("domain is pending")
+			return fmt.Sprintf("success add domain %s", data.Domain), nil
 		}
 	}
 	_, err = connect.AddDomainToTunnelConfiguration(ctx, data)
