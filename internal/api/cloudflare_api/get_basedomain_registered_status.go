@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dotcreep/go-automate-deploy/internal/service/whoisdomain"
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
 )
 
@@ -64,8 +65,21 @@ func GetBasedomainRegisteredStatus(w http.ResponseWriter, r *http.Request) {
 
 	zone, err := connect.GetZone(ctx, baseDomain)
 	if err != nil {
-		Json.NewResponse(false, w, nil, "failed get domain zone", http.StatusInternalServerError, err.Error())
-		return
+		// If failed get zone will check for domain in global
+		// Json.NewResponse(false, w, nil, "failed get domain zone", http.StatusInternalServerError, err.Error())
+		// return
+		isDomain, err := whoisdomain.WhoisDomain(ctx, domain)
+		if err != nil {
+			Json.NewResponse(false, w, nil, "failed get domain status", http.StatusInternalServerError, err.Error())
+			return
+		}
+		if isDomain == "available" {
+			Json.NewResponse(true, w, "available", "domain tersedia", http.StatusOK, nil)
+			return
+		} else if isDomain == "unavailable" {
+			Json.NewResponse(false, w, "unavailable", "domain telah digunakan", http.StatusOK, nil)
+			return
+		}
 	}
 	res, err := connect.GetDNSRecord(ctx, zone.ID)
 	if err != nil {
