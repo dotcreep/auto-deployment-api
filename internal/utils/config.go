@@ -41,18 +41,19 @@ type PortainerConfig struct {
 }
 
 type commonConfig struct {
-	ImageAPI        string `yaml:"image_api"`
-	ImageWeb        string `yaml:"image_web"`
-	RegisAdmin      string `yaml:"regis_admin"`
-	RegisMerch      string `yaml:"regis_merch"`
-	TokenRegis      string `yaml:"token_regis"`
-	XToken          string `yaml:"x_token"`
-	XTokenX         string `yaml:"x_api_key"`
-	DomainAPI       string `yaml:"domain_api"`
-	PORT            string `yaml:"port_api"`
-	PathClient      string `yaml:"path_client"`
-	PathEnvironment string `yaml:"path_environment"`
-	ChatAPI         string `yaml:"chat_api"`
+	ExcludeDomain   []string `yaml:"exclude_domain"`
+	ImageAPI        string   `yaml:"image_api"`
+	ImageWeb        string   `yaml:"image_web"`
+	RegisAdmin      string   `yaml:"regis_admin"`
+	RegisMerch      string   `yaml:"regis_merch"`
+	TokenRegis      string   `yaml:"token_regis"`
+	XToken          string   `yaml:"x_token"`
+	XTokenX         string   `yaml:"x_api_key"`
+	DomainAPI       string   `yaml:"domain_api"`
+	PORT            string   `yaml:"port_api"`
+	PathClient      string   `yaml:"path_client"`
+	PathEnvironment string   `yaml:"path_environment"`
+	ChatAPI         string   `yaml:"chat_api"`
 }
 
 type jenkinsConfig struct {

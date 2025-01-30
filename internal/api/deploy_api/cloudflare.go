@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/dotcreep/go-automate-deploy/internal/service/cloudflare"
+	"github.com/dotcreep/go-automate-deploy/internal/utils"
 )
 
 func connectCloudflare() (*cloudflare.Cloudflare, error) {
@@ -28,6 +29,10 @@ func DeployCloudflare(ctx context.Context, data *cloudflare.Subdomains) (string,
 	if err != nil {
 		return "", err
 	}
+	cfg, err := utils.YmlConfig()
+	if err != nil {
+		return "", err
+	}
 	if data.Service == "" {
 		return "", errors.New("service is required")
 	}
@@ -44,26 +49,36 @@ func DeployCloudflare(ctx context.Context, data *cloudflare.Subdomains) (string,
 		data.LoadBalancer = false
 	}
 	// Parse domain if subdomain or domain
+	var basedom string
 	parts := strings.Split(data.Domain, ".")
-	baseDomain := data.Domain
-	var domainTypes string
 	if len(parts) > 2 {
-		domainTypes = "Subdomain"
-		baseDomain = strings.Join(parts[len(parts)-2:], ".")
+		if parts[len(parts)-2] == "co" || parts[len(parts)-2] == "biz" || parts[len(parts)-2] == "com" {
+			basedom = strings.Join(parts[len(parts)-3:], ".")
+		} else {
+			basedom = strings.Join(parts[len(parts)-2:], ".")
+		}
 	} else {
-		domainTypes = "Domain"
+		basedom = strings.Join(parts[len(parts)-2:], ".")
 	}
+
 	// For new Domain
-	if domainTypes == "Domain" {
+	var excludedDomain bool = false
+	for _, v := range cfg.Config.ExcludeDomain {
+		if v == basedom {
+			excludedDomain = true
+		}
+	}
+	if !excludedDomain {
 		// This is for new domain
-		_, err := connect.GetZone(ctx, baseDomain)
+		_, err := connect.GetZone(ctx, data.Domain)
 		if err != nil {
+			data.Domain = basedom
 			_, errData := connect.Register(ctx, data)
 			if errData != nil {
 				return "", errData
 			}
 		}
-		zone, err := connect.GetZone(ctx, baseDomain)
+		zone, err := connect.GetZone(ctx, basedom)
 		if err != nil {
 			return "", err
 		}

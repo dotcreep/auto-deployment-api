@@ -69,6 +69,7 @@ func Generator(g *EGenerate) (*ReturnGenerate, error) {
 	e.Merchant.Username = g.ClientName
 	e.Merchant.Password = generator.Password(10)
 	e.AppTitle = fmt.Sprintf("\"%s\"", g.AppTitle)
+	e.Username = fmt.Sprintf("\"%s\"", g.ClientName)
 	// Return
 
 	m.PathSource = "storage/src/android/.env"

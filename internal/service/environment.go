@@ -31,6 +31,7 @@ type DataAPI struct {
 	URL          URL
 	Management   Management
 	AppTitle     string
+	Username     string
 }
 
 type Django struct {
@@ -338,6 +339,8 @@ func (e *Environment) WebEnvironment(data *Management) (string, error) {
 			line = fmt.Sprintf("CHAT_API=%s", e.DataAPI.URL.WebApi)
 		} else if strings.HasPrefix(line, "APP_TITLE") {
 			line = fmt.Sprintf("APP_TITLE=%s", e.DataAPI.AppTitle)
+		} else if strings.HasPrefix(line, "USERNAME") {
+			line = fmt.Sprintf("USERNAME=%s", e.DataAPI.Merchant.Username)
 		}
 		lines = append(lines, line)
 	}
