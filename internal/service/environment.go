@@ -333,14 +333,14 @@ func (e *Environment) WebEnvironment(data *Management) (string, error) {
 			line = fmt.Sprintf("BASE_API_WIL=%s", e.DataAPI.URL.API)
 		} else if strings.HasPrefix(line, "BASE_API_WEB") {
 			line = fmt.Sprintf("BASE_API_WEB=%s", e.DataAPI.URL.WebApi)
-		} else if strings.HasPrefix(line, "BASE_API") {
+		} else if strings.HasPrefix(line, "BASE_API") && !strings.HasPrefix(line, "BASE_API_APK") {
 			line = fmt.Sprintf("BASE_API=%s", e.DataAPI.URL.API)
 		} else if strings.HasPrefix(line, "CHAT_API") {
 			line = fmt.Sprintf("CHAT_API=%s", e.DataAPI.URL.WebApi)
 		} else if strings.HasPrefix(line, "APP_TITLE") {
 			line = fmt.Sprintf("APP_TITLE=%s", e.DataAPI.AppTitle)
-		} else if strings.HasPrefix(line, "USERNAME") {
-			line = fmt.Sprintf("USERNAME=%s", e.DataAPI.Merchant.Username)
+		} else if strings.HasPrefix(line, "USERNAMEE") {
+			line = fmt.Sprintf("USERNAMEE=%s", e.DataAPI.Merchant.Username)
 		}
 		lines = append(lines, line)
 	}

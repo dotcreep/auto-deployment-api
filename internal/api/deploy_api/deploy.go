@@ -13,6 +13,7 @@ import (
 	"github.com/dotcreep/go-automate-deploy/internal/service/cloudflare"
 	"github.com/dotcreep/go-automate-deploy/internal/service/jenkins"
 	"github.com/dotcreep/go-automate-deploy/internal/service/portainer"
+	"github.com/dotcreep/go-automate-deploy/internal/service/system"
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
 )
 
@@ -90,13 +91,14 @@ func (s *Secrets) GetSecret() (*Secrets, error) {
 // @Router			/api/v1/deploy/start [post]
 func Deploy(w http.ResponseWriter, r *http.Request) {
 	/**
-	1. Must check of value first
+	0. Must check of value first
+	1. Check ram if more than 80% cannot create user
 	2. Check exists in thord party
 	3. If fail always delete or rollback
 	4. Success will pass
 	*/
 
-	// 1. Variables and Initialize
+	// 0. Variables and Initialize
 	Json := utils.Json{}
 	yamlConfig, err := utils.Open()
 	if err != nil {
@@ -105,6 +107,16 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx, cancel := utils.Cfgx{}.LongTimeout()
 	defer cancel()
+	// 1. Check RAM
+	percent, err := system.CheckFreeRam()
+	if err != nil {
+		Json.NewResponse(false, w, nil, "unable check ram", http.StatusInternalServerError, err.Error())
+		return
+	}
+	if percent > 80 {
+		Json.NewResponse(false, w, nil, "cannot create user", http.StatusInternalServerError, "ram usage more than 80%")
+		return
+	}
 	// 2. Check input
 	if r.Header.Get("Content-Type") != "application/json" {
 		Json.NewResponse(false, w, nil, "Content-Type is not application/json", http.StatusBadRequest, nil)

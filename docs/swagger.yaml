@@ -78,24 +78,6 @@ definitions:
         example: false
         type: boolean
     type: object
-  utils.FoundSuccess:
-    properties:
-      error:
-        example: "null"
-        type: string
-      message:
-        example: message
-        type: string
-      result:
-        example: message
-        type: string
-      status:
-        example: 302
-        type: integer
-      success:
-        example: true
-        type: boolean
-    type: object
   utils.InternalServerError:
     properties:
       error:
@@ -253,10 +235,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundSuccess'
         "400":
           description: Bad request
           schema:
@@ -325,10 +303,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundSuccess'
         "400":
           description: Bad request
           schema:
@@ -361,10 +335,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundSuccess'
         "400":
           description: Bad request
           schema:
@@ -397,10 +367,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundSuccess'
         "400":
           description: Bad request
           schema:
@@ -433,10 +399,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundFail'
         "400":
           description: Bad request
           schema:
@@ -502,10 +464,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundFail'
         "400":
           description: Bad request
           schema:
@@ -531,10 +489,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundSuccess'
         "400":
           description: Bad request
           schema:
@@ -567,10 +521,6 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/utils.Success'
-        "302":
-          description: Found
-          schema:
-            $ref: '#/definitions/utils.FoundSuccess'
         "400":
           description: Bad request
           schema:

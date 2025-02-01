@@ -157,12 +157,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Success"
                         }
                     },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundSuccess"
-                        }
-                    },
                     "400": {
                         "description": "Bad request",
                         "schema": {
@@ -271,12 +265,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Success"
                         }
                     },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundSuccess"
-                        }
-                    },
                     "400": {
                         "description": "Bad request",
                         "schema": {
@@ -326,12 +314,6 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/utils.Success"
-                        }
-                    },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundSuccess"
                         }
                     },
                     "400": {
@@ -385,12 +367,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Success"
                         }
                     },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundSuccess"
-                        }
-                    },
                     "400": {
                         "description": "Bad request",
                         "schema": {
@@ -440,12 +416,6 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/utils.Success"
-                        }
-                    },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundFail"
                         }
                     },
                     "400": {
@@ -550,12 +520,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/utils.Success"
                         }
                     },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundFail"
-                        }
-                    },
                     "400": {
                         "description": "Bad request",
                         "schema": {
@@ -594,12 +558,6 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/utils.Success"
-                        }
-                    },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundSuccess"
                         }
                     },
                     "400": {
@@ -651,12 +609,6 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/utils.Success"
-                        }
-                    },
-                    "302": {
-                        "description": "Found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.FoundSuccess"
                         }
                     },
                     "400": {
@@ -784,31 +736,6 @@ const docTemplate = `{
                 "success": {
                     "type": "boolean",
                     "example": false
-                }
-            }
-        },
-        "utils.FoundSuccess": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "null"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "message"
-                },
-                "result": {
-                    "type": "string",
-                    "example": "message"
-                },
-                "status": {
-                    "type": "integer",
-                    "example": 302
-                },
-                "success": {
-                    "type": "boolean",
-                    "example": true
                 }
             }
         },

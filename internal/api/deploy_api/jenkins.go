@@ -107,7 +107,7 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	if len(getNameLength) > 2 {
 		labelName = fmt.Sprintf("%s %s", getNameLength[0], getNameLength[1])
 	} else {
-		labelName = data.Name
+		labelName = data.MerchantName
 	}
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<label_name>", labelName)
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<host_name>", domain)
