@@ -14,3 +14,19 @@ func TestFreeRamCheck(t *testing.T) {
 	}
 	fmt.Printf("Free RAM: %d%%\n", percent)
 }
+
+func TestFreeRamCheckSecond(t *testing.T) {
+	percent, err := system.CheckFreeRamSecond()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Usage RAM: %d%%\n", percent)
+}
+
+func TestFreeRamCheckThird(t *testing.T) {
+	percent, err := system.CheckFreeRamThird()
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Usage RAM: %d%%\n", percent)
+}

@@ -26,6 +26,18 @@ definitions:
       merchant_name:
         example: Example Name
         type: string
+      paket_merchant:
+        example: starter
+        type: string
+      username:
+        example: exampleusername
+        type: string
+    type: object
+  deploy_api.RequestInputAddDomain:
+    properties:
+      domain:
+        example: example.com
+        type: string
       username:
         example: exampleusername
         type: string
@@ -150,6 +162,38 @@ info:
   title: Automate Deployment API
   version: "1.0"
 paths:
+  /api/v1/deploy/remove:
+    delete:
+      consumes:
+      - application/json
+      description: Remove all data of user by username and domain used
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/deploy_api.RequestInputAddDomain'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Undeploy user data
+      tags:
+      - Deploy
   /api/v1/deploy/start:
     post:
       consumes:

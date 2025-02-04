@@ -37,10 +37,11 @@ func (c *Cloudflare) DeleteDomainFromTunnelConfiguration(ctx context.Context, s 
 			},
 		},
 	}
-
+	var isExist bool = false
 	for _, ingress := range tunnelConfig.Result.Config.Ingress {
 		if ingress.Hostname != s.Domain {
 			newResponse.Result.Config.Ingress = append(newResponse.Result.Config.Ingress, ingress)
+			isExist = true
 		}
 	}
 
@@ -63,5 +64,8 @@ func (c *Cloudflare) DeleteDomainFromTunnelConfiguration(ctx context.Context, s 
 		resp.Body = io.NopCloser(bytes.NewReader(b))
 		return "", fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
-	return fmt.Sprintf("Successfully delete domain %s from tunnel %s", s.Domain, s.TunnelID), nil
+	if !isExist {
+		return "", fmt.Errorf("domain %s is already not exist in tunnel %s", s.Domain, s.TunnelID)
+	}
+	return fmt.Sprintf("successfully delete domain %s from tunnel %s", s.Domain, s.TunnelID), nil
 }

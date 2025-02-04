@@ -56,10 +56,11 @@ type Response struct {
 }
 
 type RequestInput struct {
-	Domain       string `json:"domain" example:"example.com"`
-	Username     string `json:"username" example:"exampleusername"`
-	Email        string `json:"email" example:"sample@example.com"`
-	MerchantName string `json:"merchant_name" example:"Example Name"`
+	Domain         string `json:"domain" example:"example.com"`
+	Username       string `json:"username" example:"exampleusername"`
+	Email          string `json:"email" example:"sample@example.com"`
+	MerchantName   string `json:"merchant_name" example:"Example Name"`
+	PacketMerchant string `json:"paket_merchant" example:"starter"`
 }
 
 func (s *Secrets) GetSecret() (*Secrets, error) {
@@ -108,13 +109,13 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := utils.Cfgx{}.LongTimeout()
 	defer cancel()
 	// 1. Check RAM
-	percent, err := system.CheckFreeRam()
+	percent, err := system.CheckFreeRamThird()
 	if err != nil {
 		Json.NewResponse(false, w, nil, "unable check ram", http.StatusInternalServerError, err.Error())
 		return
 	}
 	if percent > 80 {
-		Json.NewResponse(false, w, nil, "cannot create user", http.StatusInternalServerError, "ram usage more than 80%")
+		Json.NewResponse(false, w, nil, "cannot create user", http.StatusInternalServerError, fmt.Sprintf("ram more than 80%%, usage : %v%%", percent))
 		return
 	}
 	// 2. Check input
@@ -161,6 +162,11 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	domainClient := requestData.Domain
 	if domainClient == "" {
 		Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, nil)
+		return
+	}
+	paketMerchant := requestData.PacketMerchant
+	if paketMerchant == "" {
+		Json.NewResponse(false, w, nil, "paket merchant is required", http.StatusBadRequest, nil)
 		return
 	}
 	tunnelId := yamlConfig.Cloudflare.TunnelID
@@ -248,7 +254,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	resCloudflare, err := DeployCloudflare(ctx, cloudflare)
 	if err != nil {
 		defer connectcf.RollbackAddDomain(ctx, cloudflare)
-		Json.NewResponse(false, w, nil, "failed add domain", http.StatusBadRequest, err.Error())
+		Json.NewResponse(false, w, "rollback domain", "failed add domain", http.StatusBadRequest, err.Error())
 		return
 	}
 	responseCloudflare := resCloudflare
@@ -273,8 +279,9 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 			PackageName: fmt.Sprintf("%s.%s.%s", reverseDomain[0], reverseDomain[1], usernameClient),
 			LabelApps:   merchantName,
 		},
-		WebApi:   yamlConfig.Config.ChatAPI,
-		AppTitle: merchantName,
+		WebApi:        yamlConfig.Config.ChatAPI,
+		AppTitle:      merchantName,
+		PaketMerchant: paketMerchant,
 	}
 
 	// Generate ENV for Client
@@ -325,7 +332,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		defer connectcf.RollbackAddDomain(ctx, cloudflare)
 		defer connectpt.RollbackAddStack(ctx, usernameClient)
-		Json.NewResponse(false, w, nil, "failed add container", http.StatusBadRequest, err.Error())
+		Json.NewResponse(false, w, "rollback domain and stack", "failed add container", http.StatusBadRequest, err.Error())
 		return
 	}
 	responsePortainer := resPortainer
@@ -383,7 +390,7 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 		defer connectcf.RollbackAddDomain(ctx, cloudflare)
 		defer connectpt.RollbackAddStack(ctx, usernameClient)
 		defer connectjen.RollbackAddItem(ctx, JenInput)
-		Json.NewResponse(false, w, nil, "failed add item", http.StatusBadRequest, err.Error())
+		Json.NewResponse(false, w, "rollback domain, stack and item", "failed add item", http.StatusBadRequest, err.Error())
 		return
 	}
 	responseJenkins := resJenkins

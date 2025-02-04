@@ -16,7 +16,7 @@ func (p *Portainer) RollbackAddStack(ctx context.Context, name string) {
 		log.Println(err)
 		stackInfo = false
 	}
-	err = RemoveClientDirectory(name)
+	err = p.RemoveClientDirectory(name)
 	if err != nil {
 		log.Println(err)
 		folderInfo = false

@@ -23,6 +23,7 @@ type EGenerate struct {
 	Email            string
 	WebApi           string
 	AppTitle         string
+	PaketMerchant    string
 }
 
 type EGenerateAndroid struct {
@@ -70,6 +71,7 @@ func Generator(g *EGenerate) (*ReturnGenerate, error) {
 	e.Merchant.Password = generator.Password(10)
 	e.AppTitle = fmt.Sprintf("\"%s\"", g.AppTitle)
 	e.Username = fmt.Sprintf("\"%s\"", g.ClientName)
+	e.PacketMerchant = fmt.Sprintf("\"%s\"", g.PaketMerchant)
 	// Return
 
 	m.PathSource = "storage/src/android/.env"

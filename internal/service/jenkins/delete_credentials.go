@@ -17,7 +17,8 @@ func (j *Jenkins) DeleteCredential(ctx context.Context, data *JenkinsData) (stri
 	if yamlConfig == nil {
 		return "", err
 	}
-	data.PathURL = fmt.Sprintf("/credentials/store/system/domain/%s/credentials/%s/config.xml", yamlConfig.Jenkins.DomainCredentials, data.Name)
+	prefixUsername := fmt.Sprintf("%s%s", yamlConfig.Jenkins.PrefixCredentials, data.Name)
+	data.PathURL = fmt.Sprintf("/credentials/store/system/domain/%s/credentials/%s/config.xml", yamlConfig.Jenkins.DomainCredentials, prefixUsername)
 	resp, err := j.DeleteJenkins(ctx, data)
 	if err != nil {
 		return "", err

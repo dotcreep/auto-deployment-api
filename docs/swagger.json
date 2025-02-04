@@ -12,6 +12,57 @@
     },
     "basePath": "/",
     "paths": {
+        "/api/v1/deploy/remove": {
+            "delete": {
+                "security": [
+                    {
+                        "X-Token": []
+                    }
+                ],
+                "description": "Remove all data of user by username and domain used",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Deploy"
+                ],
+                "summary": "Undeploy user data",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/deploy_api.RequestInputAddDomain"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BadRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.InternalServerError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/deploy/start": {
             "post": {
                 "security": [
@@ -657,6 +708,23 @@
                 "merchant_name": {
                     "type": "string",
                     "example": "Example Name"
+                },
+                "paket_merchant": {
+                    "type": "string",
+                    "example": "starter"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "exampleusername"
+                }
+            }
+        },
+        "deploy_api.RequestInputAddDomain": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string",
+                    "example": "example.com"
                 },
                 "username": {
                     "type": "string",

@@ -87,7 +87,8 @@ func main() {
 	r.Use(cors)
 	r.Route("/api/v1/deploy", func(r chi.Router) {
 		r.Use(KeyMiddlewareTwo)
-		r.Post("/start", deploy_api.Deploy) // Docs
+		r.Post("/start", deploy_api.Deploy)      // Docs
+		r.Delete("/remove", deploy_api.Undeploy) // Docs
 	})
 	r.Route("/api/v1/domain", func(r chi.Router) {
 		r.Use(KeyMiddlewareTwo)

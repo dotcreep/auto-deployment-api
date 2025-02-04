@@ -23,15 +23,16 @@ type Android struct {
 }
 
 type DataAPI struct {
-	Django       Django
-	Laravel      Laravel
-	SuperUser    SuperUser
-	Merchant     Merchant
-	RootDatabase RootDatabase
-	URL          URL
-	Management   Management
-	AppTitle     string
-	Username     string
+	Django         Django
+	Laravel        Laravel
+	SuperUser      SuperUser
+	Merchant       Merchant
+	RootDatabase   RootDatabase
+	URL            URL
+	Management     Management
+	AppTitle       string
+	Username       string
+	PacketMerchant string
 }
 
 type Django struct {
@@ -300,6 +301,9 @@ func (e *Environment) WebEnvironment(data *Management) (string, error) {
 	if e.DataAPI.AppTitle == "" {
 		return "", errors.New("app title is required")
 	}
+	if e.DataAPI.PacketMerchant == "" {
+		return "", errors.New("packet merchant is required")
+	}
 	if data.PathSource == "" {
 		return "", errors.New("path source is required")
 	}
@@ -341,6 +345,8 @@ func (e *Environment) WebEnvironment(data *Management) (string, error) {
 			line = fmt.Sprintf("APP_TITLE=%s", e.DataAPI.AppTitle)
 		} else if strings.HasPrefix(line, "USERNAMEE") {
 			line = fmt.Sprintf("USERNAMEE=%s", e.DataAPI.Merchant.Username)
+		} else if strings.HasPrefix(line, "PAKET_MERCHANT") {
+			line = fmt.Sprintf("PAKET_MERCHANT=%s", e.DataAPI.PacketMerchant)
 		}
 		lines = append(lines, line)
 	}

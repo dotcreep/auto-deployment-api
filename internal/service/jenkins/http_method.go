@@ -75,9 +75,8 @@ func (j *Jenkins) DeleteJenkins(ctx context.Context, data *JenkinsData) (*http.R
 	if data.PathURL == "" {
 		return nil, errors.New("data path is required")
 	}
-
 	url := fmt.Sprintf("%s%s", j.BaseURL, data.PathURL)
-
+	fmt.Println(url)
 	req, err := http.NewRequestWithContext(ctx, "DELETE", url, nil)
 	if err != nil {
 		return nil, err
@@ -87,6 +86,9 @@ func (j *Jenkins) DeleteJenkins(ctx context.Context, data *JenkinsData) (*http.R
 		return nil, errors.New("jenkins username or token is required")
 	}
 	authHeader := createAuthHeader(j.Username, j.Token)
+	req.Header.Del("Content-Type")
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36")
 	req.Header.Set("Authorization", authHeader)
 
 	client := &http.Client{}
@@ -94,10 +96,14 @@ func (j *Jenkins) DeleteJenkins(ctx context.Context, data *JenkinsData) (*http.R
 	if err != nil {
 		return nil, err
 	}
-	resp.Body.Close()
-	b, _ := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		resp.Body = io.NopCloser(bytes.NewReader(b))
+		fmt.Println(string(b))
 		return nil, fmt.Errorf("unexpected status code: %v\ndata: %s", resp.StatusCode, string(b))
 	}
 	return resp, nil

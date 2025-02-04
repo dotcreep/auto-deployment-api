@@ -54,6 +54,7 @@ type commonConfig struct {
 	PathClient      string   `yaml:"path_client"`
 	PathEnvironment string   `yaml:"path_environment"`
 	ChatAPI         string   `yaml:"chat_api"`
+	RootPassword    string   `yaml:"system_root_password"`
 }
 
 type jenkinsConfig struct {

@@ -4,11 +4,29 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
 )
 
-func RemoveClientDirectory(name string) error {
+func removeWithSudo(paths []string) error {
+	cfg, err := utils.Open()
+	if err != nil {
+		return err
+	}
+	for _, path := range paths {
+		cmd := exec.Command("sudo", "-S", "rm", "-rf", path)
+		cmd.Stdin = strings.NewReader(cfg.Config.RootPassword + "\n")
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("failed to remove %s: %v\nOutput: %s", path, err, output)
+		}
+	}
+	return nil
+}
+
+func (p *Portainer) RemoveClientDirectory(name string) error {
 	// 1. Input and Variables
 	// 1.1. Check input
 	if name == "" {
@@ -40,7 +58,7 @@ func RemoveClientDirectory(name string) error {
 
 	// 3. Remove folder
 	for _, path := range allPath {
-		err := os.RemoveAll(path)
+		err := removeWithSudo([]string{path})
 		if err != nil {
 			return err
 		}
