@@ -98,7 +98,6 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	3. If fail always delete or rollback
 	4. Success will pass
 	*/
-
 	// 0. Variables and Initialize
 	Json := utils.Json{}
 	yamlConfig, err := utils.Open()
