@@ -15,11 +15,13 @@ type Environment struct {
 }
 
 type Android struct {
-	BaseAPI     string
-	BaseWeb     string
-	PackageName string
-	LabelApps   string
-	Host        string
+	BaseAPI       string
+	BaseWeb       string
+	PackageName   string
+	LabelApps     string
+	Host          string
+	Username      string
+	PaketMerchant string
 }
 
 type DataAPI struct {
@@ -130,6 +132,10 @@ func (e *Environment) AndroidEnvironment(data *Management) (string, error) {
 			line = fmt.Sprintf("LABEL_APPS=%s", e.Android.LabelApps)
 		} else if strings.HasPrefix(line, "HOST") {
 			line = fmt.Sprintf("HOST=%s", e.Android.Host)
+		} else if strings.HasPrefix(line, "USERNAMEE") {
+			line = fmt.Sprintf("USERNAMEE=%s", e.Android.Username)
+		} else if strings.HasPrefix(line, "PAKET_MERCHANT") {
+			line = fmt.Sprintf("PAKET_MERCHANT=%s", e.Android.PaketMerchant)
 		}
 		lines = append(lines, line)
 	}

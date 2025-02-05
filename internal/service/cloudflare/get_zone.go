@@ -29,6 +29,9 @@ func (c *Cloudflare) GetZone(ctx context.Context, domain string) (*domainZone, e
 		return nil, err
 	}
 	baseDomain := utils.GetBaseDomain(domain)
+	if baseDomain == "" {
+		return nil, errors.New("domain is invalid")
+	}
 	var domainZones domainZone
 	for _, v := range zone.Result {
 		if v.Name == baseDomain {

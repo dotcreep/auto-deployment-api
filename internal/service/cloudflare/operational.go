@@ -234,13 +234,11 @@ func (c *Cloudflare) Register(ctx context.Context, s *Subdomains) (string, error
 	if err != nil {
 		return "", err
 	}
-
 	// Check Domain if already registered
 	_, err = c.GetZone(ctx, s.Domain)
 	if err == nil {
-		return "Domain is already registered", nil
+		return "domain is already registered", nil
 	}
-
 	data := struct {
 		Account struct {
 			ID string `json:"id"`
@@ -310,7 +308,9 @@ func (c *Cloudflare) AddDNSRecord(ctx context.Context, s *Subdomains) (string, e
 	}
 
 	baseDomain := utils.GetBaseDomain(s.Domain)
-
+	if baseDomain == "" {
+		return "", errors.New("domain is invalid")
+	}
 	zone, err := c.GetZone(ctx, baseDomain)
 	if err != nil {
 		return "", err

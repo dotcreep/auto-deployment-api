@@ -21,6 +21,9 @@ func (c *Cloudflare) DeleteDomainDNSRecords(ctx context.Context, s *Subdomains) 
 
 	// 3. Get Zone ID
 	baseDom := utils.GetBaseDomain(s.Domain)
+	if baseDom == "" {
+		return "", errors.New("domain is invalid")
+	}
 	zone, err := connect.GetZone(ctx, baseDom)
 	if err != nil {
 		return "", err

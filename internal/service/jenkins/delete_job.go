@@ -8,10 +8,10 @@ import (
 )
 
 func (j *Jenkins) DeleteJob(ctx context.Context, data *JenkinsData) (string, error) {
-	if data.Name == "" {
+	if data.Username == "" {
 		return "", errors.New("data name is required")
 	}
-	data.PathURL = fmt.Sprintf("/job/%s/", data.Name)
+	data.PathURL = fmt.Sprintf("/job/%s/", data.Username)
 	resp, err := j.DeleteJenkins(ctx, data)
 	if err != nil {
 		return "", err

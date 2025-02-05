@@ -2,9 +2,7 @@ package cloudflare_api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/dotcreep/go-automate-deploy/internal/service/whoisdomain"
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
@@ -47,22 +45,12 @@ func GetBasedomainRegisteredStatus(w http.ResponseWriter, r *http.Request) {
 		Json.NewResponse(false, w, nil, "domain is required", http.StatusBadRequest, nil)
 		return
 	}
-	slDom := strings.Split(domain, ".")
-	var baseDomain string
-	if len(slDom) > 2 {
-		domainsub := []string{"co", "biz,"}
-		for _, v := range domainsub {
-			if slDom[len(slDom)-2] == v {
-				baseDomain = fmt.Sprintf("%s.%s.%s", slDom[len(slDom)-3], slDom[len(slDom)-2], slDom[len(slDom)-1])
-				break
-			}
-			baseDomain = fmt.Sprintf("%s.%s", slDom[len(slDom)-2], slDom[len(slDom)-1])
-		}
-		//baseDomain = fmt.Sprintf("%s.%s", slDom[len(slDom)-2], slDom[len(slDom)-1])
-	} else {
-		baseDomain = domain
-	}
 
+	baseDomain := utils.GetBaseDomain(domain)
+	if baseDomain == "" {
+		Json.NewResponse(false, w, nil, "domain is invalid", http.StatusInternalServerError, nil)
+		return
+	}
 	zone, err := connect.GetZone(ctx, baseDomain)
 	if err != nil {
 		// If failed get zone will check for domain in global

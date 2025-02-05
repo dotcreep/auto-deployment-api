@@ -41,6 +41,7 @@ func (c *Cloudflare) DeleteDomainFromTunnelConfiguration(ctx context.Context, s 
 	for _, ingress := range tunnelConfig.Result.Config.Ingress {
 		if ingress.Hostname != s.Domain {
 			newResponse.Result.Config.Ingress = append(newResponse.Result.Config.Ingress, ingress)
+		} else {
 			isExist = true
 		}
 	}

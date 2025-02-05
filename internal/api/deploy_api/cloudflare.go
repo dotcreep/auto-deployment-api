@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/dotcreep/go-automate-deploy/internal/service/cloudflare"
 	"github.com/dotcreep/go-automate-deploy/internal/utils"
@@ -49,18 +48,10 @@ func DeployCloudflare(ctx context.Context, data *cloudflare.Subdomains) (string,
 		data.LoadBalancer = false
 	}
 	// Parse domain if subdomain or domain
-	var basedom string
-	parts := strings.Split(data.Domain, ".")
-	if len(parts) > 2 {
-		if parts[len(parts)-2] == "co" || parts[len(parts)-2] == "biz" || parts[len(parts)-2] == "com" {
-			basedom = strings.Join(parts[len(parts)-3:], ".")
-		} else {
-			basedom = strings.Join(parts[len(parts)-2:], ".")
-		}
-	} else {
-		basedom = strings.Join(parts[len(parts)-2:], ".")
+	basedom := utils.GetBaseDomain(data.Domain)
+	if basedom == "" {
+		return "", errors.New("domain is invalid")
 	}
-
 	// For new Domain
 	var excludedDomain bool = false
 	for _, v := range cfg.Config.ExcludeDomain {

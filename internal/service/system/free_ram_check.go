@@ -1,7 +1,6 @@
 package system
 
 import (
-	"fmt"
 	"runtime"
 	"syscall"
 
@@ -27,7 +26,6 @@ func CheckFreeRamSecond() (int64, error) {
 	runtime.ReadMemStats(&mem)
 	total := int64(mem.TotalAlloc)
 	usage := int64(mem.Sys)
-	fmt.Println(total, usage)
 	percent := (float64(total-usage) / float64(total)) * 100
 	return int64(percent), nil
 }

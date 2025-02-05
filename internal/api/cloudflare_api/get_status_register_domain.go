@@ -40,6 +40,10 @@ func StatusRegisterDomain(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	baseDomain := utils.GetBaseDomain(domain)
+	if baseDomain == "" {
+		Json.NewResponse(false, w, nil, "domain is invalid", http.StatusInternalServerError, nil)
+		return
+	}
 	res, err := connect.GetZone(ctx, baseDomain)
 	if err != nil {
 		Json.NewResponse(true, w, "unregistered", "domain belum terdaftar", http.StatusOK, err.Error())

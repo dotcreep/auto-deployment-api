@@ -75,6 +75,10 @@ func GetDomainIsNotExists(w http.ResponseWriter, r *http.Request) {
 
 	// 2. Search from Zone
 	baseDomain := utils.GetBaseDomain(domain)
+	if baseDomain == "" {
+		Json.NewResponse(false, w, nil, "domain is invalid", http.StatusInternalServerError, nil)
+		return
+	}
 	zone, err := connect.GetZone(ctx, baseDomain)
 	if err != nil {
 		Json.NewResponse(false, w, nil, err.Error(), http.StatusInternalServerError, err)

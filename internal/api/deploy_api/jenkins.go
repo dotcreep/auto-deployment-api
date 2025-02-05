@@ -42,7 +42,7 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	if data.DomainCredentials == "" {
 		return "", errors.New("domain credentials is required")
 	}
-	if data.Name == "" {
+	if data.Username == "" {
 		return "", errors.New("name is required")
 	}
 	if data.MerchantName == "" {
@@ -96,7 +96,7 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	if err != nil {
 		return "", err
 	}
-	packageName := utils.GeneratePackageName(data.Name, domain)
+	packageName := utils.GeneratePackageName(data.Username, domain)
 	// mId := strconv.Itoa(data.MerchantID)
 	replaceEnv := strings.ReplaceAll(string(fileContent), "<app_id>", packageName)
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<url_api>", data.APIURL)
@@ -112,6 +112,8 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<label_name>", labelName)
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<host_name>", domain)
 	replaceEnv = strings.ReplaceAll(replaceEnv, "<app_title>", fmt.Sprintf("\"%s\"", data.MerchantName))
+	replaceEnv = strings.ReplaceAll(replaceEnv, "<username>", data.Username)
+	replaceEnv = strings.ReplaceAll(replaceEnv, "<packet_merchant>", data.PaketMerchant)
 	base64env := base64.StdEncoding.EncodeToString([]byte(replaceEnv))
 	xmlCred, err := os.Open("storage/src/jenkins/credentials.xml")
 	if err != nil {
@@ -123,10 +125,10 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	if err != nil {
 		return "", err
 	}
-	data.JenkinsCredentials.JenFiles.Id = fmt.Sprintf("client_env_%s", data.Name)
+	data.JenkinsCredentials.JenFiles.Id = fmt.Sprintf("client_env_%s", data.Username)
 	data.JenkinsCredentials.JenFiles.Filename = ".env"
 	data.JenkinsCredentials.JenFiles.SecretBytes = base64env
-	data.JenkinsCredentials.JenFiles.Description = fmt.Sprintf("Environment for client %s", data.Name)
+	data.JenkinsCredentials.JenFiles.Description = fmt.Sprintf("Environment for client %s", data.Username)
 	cred, err := connect.AddCredentials(data, "file")
 	if err != nil {
 		return "", err
@@ -160,13 +162,13 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	for i, v := range data.JenkinsItem.Builders {
 		if strings.Contains(v.Command, "client-x") {
 			newName := strings.ReplaceAll(
-				v.Command, "client-x", fmt.Sprintf("client-%s", data.Name),
+				v.Command, "client-x", fmt.Sprintf("client-%s", data.Username),
 			)
 			data.JenkinsItem.Builders[i].Command = newName
 		}
 		if strings.Contains(v.Command, "{{username}}") {
 			apkName := strings.ReplaceAll(
-				v.Command, "{{username}}", data.Name,
+				v.Command, "{{username}}", data.Username,
 			)
 			data.JenkinsItem.Builders[i].Command = apkName
 		}
@@ -211,7 +213,7 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	}
 	var jobIs string
 	for _, v := range allJob.Jobs {
-		if v.Name == data.Name {
+		if v.Name == data.Username {
 			jobIs = "found"
 			break
 		}
@@ -251,7 +253,7 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 	}
 	var jobStatus string
 	for _, v := range newStatus.Jobs {
-		if v.Name == data.Name {
+		if v.Name == data.Username {
 			jobStatus = v.Color
 			break
 		}

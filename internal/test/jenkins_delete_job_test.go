@@ -34,7 +34,7 @@ func TestJenkinsDeleteJob(t *testing.T) {
 	// Example 1 {{jenkins_url}}/job/aspirasihomman  <- this not working
 	// Example 2 {{jenkins_url}}/job/aspirasihomman/ <- this working
 	jenkinData := jenkins.JenkinsData{}
-	jenkinData.Name = "aspirasihomman"
+	jenkinData.Username = "aspirasihomman"
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	resp, err := connect.DeleteJob(ctx, &jenkinData)
@@ -50,7 +50,7 @@ func TestJenkinsDeleteCredentials(t *testing.T) {
 		t.Error(err)
 	}
 	jenkinData := jenkins.JenkinsData{}
-	jenkinData.Name = "dika12"
+	jenkinData.Username = "dika12"
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	resp, err := connect.DeleteCredential(ctx, &jenkinData)

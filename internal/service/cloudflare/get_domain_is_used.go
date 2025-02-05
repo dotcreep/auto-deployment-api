@@ -29,6 +29,9 @@ func (c *Cloudflare) GetDomainIsUsed(ctx context.Context, domain, tunnelID strin
 
 	// 2. Search from Zone
 	baseDomain := utils.GetBaseDomain(domain)
+	if baseDomain == "" {
+		return "", errors.New("domain is invalid")
+	}
 	zone, err := c.GetZone(ctx, baseDomain)
 	if err != nil {
 		return "", err

@@ -6,7 +6,7 @@ import (
 )
 
 func (p *Jenkins) RollbackAddItem(ctx context.Context, data *JenkinsData) {
-	if data.Name == "" {
+	if data.Username == "" {
 		log.Println("name is required")
 	}
 

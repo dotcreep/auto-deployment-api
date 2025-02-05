@@ -76,7 +76,6 @@ func (j *Jenkins) DeleteJenkins(ctx context.Context, data *JenkinsData) (*http.R
 		return nil, errors.New("data path is required")
 	}
 	url := fmt.Sprintf("%s%s", j.BaseURL, data.PathURL)
-	fmt.Println(url)
 	req, err := http.NewRequestWithContext(ctx, "DELETE", url, nil)
 	if err != nil {
 		return nil, err

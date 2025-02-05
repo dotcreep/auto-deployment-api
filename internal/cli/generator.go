@@ -48,6 +48,8 @@ func Generator(g *EGenerate) (*ReturnGenerate, error) {
 	a.Host = g.EGenerateAndroid.WebHost
 	a.LabelApps = g.EGenerateAndroid.LabelApps
 	a.PackageName = utils.GeneratePackageName(g.ClientName, g.EGenerateAndroid.WebHost)
+	a.Username = g.ClientName
+	a.PaketMerchant = g.PaketMerchant
 
 	// Web
 	e := &data.DataAPI

@@ -265,7 +265,7 @@ type JenkinsData struct {
 	DomainCredentials  string
 	APIURL             string
 	Files              string
-	Name               string
+	Username           string
 	MerchantName       string
 	MerchantID         int
 	ID                 string
@@ -274,6 +274,7 @@ type JenkinsData struct {
 	DomainWrapper      DomainWrapper
 	JenkinsItem        Project
 	JenkinsCredentials JenkinsCredentials
+	PaketMerchant      string
 }
 
 type CredentialsStore struct {
@@ -348,7 +349,7 @@ func (j *Jenkins) AddCredentials(data *JenkinsData, typeInput string) (*http.Res
 	if data.ID == "" {
 		return nil, errors.New("data id is required")
 	}
-	if data.Name == "" {
+	if data.Username == "" {
 		return nil, errors.New("data name is required")
 	}
 	// if data.Files == "" {
@@ -399,22 +400,22 @@ func (j *Jenkins) GetJobOperation(data *JenkinsData, action string) (*http.Respo
 	defer cancel()
 	switch action {
 	case "Status":
-		if data.Name == "" {
+		if data.Username == "" {
 			return nil, errors.New("data name is required")
 		}
-		url = fmt.Sprintf("/job/%s/lastBuild/api/json?depth=1", data.Name)
+		url = fmt.Sprintf("/job/%s/lastBuild/api/json?depth=1", data.Username)
 	case "DetailStatus":
-		if data.Name == "" {
+		if data.Username == "" {
 			return nil, errors.New("data name is required")
 		}
-		url = fmt.Sprintf("/job/%s/api/json?depth=1", data.Name)
+		url = fmt.Sprintf("/job/%s/api/json?depth=1", data.Username)
 	case "AllJob":
 		url = "/api/json?tree=jobs[name,color,url]"
 	case "JobConfig":
-		if data.Name == "" {
+		if data.Username == "" {
 			return nil, errors.New("data name is required")
 		}
-		url = fmt.Sprintf("/job/%s/config.xml", data.Name)
+		url = fmt.Sprintf("/job/%s/config.xml", data.Username)
 	default:
 		return nil, errors.New("action is not in listed")
 	}
@@ -436,23 +437,23 @@ func (j *Jenkins) PostJobOperation(data *JenkinsData, action string) (*http.Resp
 	}
 	switch action {
 	case "Update":
-		if data.Name == "" {
+		if data.Username == "" {
 			return nil, errors.New("data name is required")
 		}
-		url = fmt.Sprintf("/job/%s/config.xml", data.Name)
+		url = fmt.Sprintf("/job/%s/config.xml", data.Username)
 	case "Delete":
-		if data.Name == "" {
+		if data.Username == "" {
 			return nil, errors.New("data name is required")
 		}
-		url = fmt.Sprintf("/job/%s/doDelete", data.Name)
+		url = fmt.Sprintf("/job/%s/doDelete", data.Username)
 	case "Build":
-		if data.Name == "" {
+		if data.Username == "" {
 			return nil, errors.New("data name is required")
 		}
 		if data.Body == nil {
 			return nil, errors.New("data body is required")
 		}
-		url = fmt.Sprintf("/job/%s/build", data.Name)
+		url = fmt.Sprintf("/job/%s/build", data.Username)
 	default:
 		return nil, errors.New("action is not in listed")
 	}
@@ -488,10 +489,10 @@ func (j *Jenkins) GetCredentialOperation(ctx context.Context, data *JenkinsData,
 	case "ReadAllCredentials":
 		data.PathURL = fmt.Sprintf("/credentials/store/system/domain/%s/api/json?depth=1", data.DomainCredentials)
 	case "ReadDetailCredentials":
-		if data.Name == "" {
+		if data.Username == "" {
 			return nil, errors.New("data name is required")
 		}
-		data.PathURL = fmt.Sprintf("/credentials/store/system/domain/%s/credentials/%s/api/json", data.DomainCredentials, data.Name)
+		data.PathURL = fmt.Sprintf("/credentials/store/system/domain/%s/credentials/%s/api/json", data.DomainCredentials, data.Username)
 	default:
 		return nil, errors.New("action is not in listed")
 	}

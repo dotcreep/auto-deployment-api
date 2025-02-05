@@ -379,9 +379,10 @@ func Deploy(w http.ResponseWriter, r *http.Request) {
 	JenInput := &jenkins.JenkinsData{}
 	JenInput.ID = usernameClient
 	JenInput.Description = fmt.Sprintf("Environment for %s", usernameClient)
-	JenInput.Name = usernameClient
+	JenInput.Username = usernameClient
 	JenInput.DomainCredentials = yamlConfig.Jenkins.DomainCredentials
 	JenInput.MerchantName = merchantName
+	JenInput.PaketMerchant = paketMerchant
 	// JenInput.MerchantID = merchantId
 	JenInput.APIURL = yamlConfig.Jenkins.APIURL
 	resJenkins, err := DeployJenkins(ctx, JenInput, domainClient)

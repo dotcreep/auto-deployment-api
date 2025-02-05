@@ -13,7 +13,7 @@ func (j *Jenkins) AddItem(ctx context.Context, data *JenkinsData) (string, error
 	if data.Body == nil {
 		return "", errors.New("data body is required")
 	}
-	if data.Name == "" {
+	if data.Username == "" {
 		return "", errors.New("data name is required")
 	}
 	xmlData, err := xml.Marshal(data.JenkinsItem)
@@ -21,7 +21,7 @@ func (j *Jenkins) AddItem(ctx context.Context, data *JenkinsData) (string, error
 		return "", err
 	}
 	body := bytes.NewBuffer(xmlData)
-	data.PathURL = fmt.Sprintf("/createItem?name=%s", data.Name)
+	data.PathURL = fmt.Sprintf("/createItem?name=%s", data.Username)
 	data.Body = body
 
 	resp, err := j.PostJenkins(ctx, data)

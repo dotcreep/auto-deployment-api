@@ -12,7 +12,7 @@ func GetBaseDomain(domain string) string {
 	slDom := strings.Split(domain, ".")
 	var baseDomain string
 	if len(slDom) > 2 {
-		domainsub := []string{"co", "biz,"}
+		domainsub := []string{"co", "biz,", "my", "ac", "gov", "edu", "org", "web", "sch", "me", "com", "net", "go", "govt"}
 		for _, v := range domainsub {
 			if slDom[len(slDom)-2] == v {
 				baseDomain = fmt.Sprintf("%s.%s.%s", slDom[len(slDom)-3], slDom[len(slDom)-2], slDom[len(slDom)-1])

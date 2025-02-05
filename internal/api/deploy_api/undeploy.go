@@ -124,7 +124,7 @@ func Undeploy(w http.ResponseWriter, r *http.Request) {
 		removal.Portainer.DataDirectory = true
 	}
 	jkdata := jenkins.JenkinsData{}
-	jkdata.Name = data.Username
+	jkdata.Username = data.Username
 	jkdata.DomainCredentials = cfg.Jenkins.DomainCredentials
 	_, err = connectjen.DeleteJob(ctx, &jkdata)
 	if err != nil {
