@@ -54,6 +54,12 @@ definitions:
         example: exampleusername
         type: string
     type: object
+  portainer_api.RequestInputUpdateStack:
+    properties:
+      name:
+        example: mystack
+        type: string
+    type: object
   utils.BadRequest:
     properties:
       error:
@@ -576,6 +582,38 @@ paths:
       security:
       - X-Token: []
       summary: Get status of stack
+      tags:
+      - System
+  /api/v1/system/update:
+    post:
+      consumes:
+      - application/json
+      description: You can update stack only using name of stack
+      parameters:
+      - description: Body Input
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/portainer_api.RequestInputUpdateStack'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-Token: []
+      summary: Update stack by name
       tags:
       - System
 securityDefinitions:

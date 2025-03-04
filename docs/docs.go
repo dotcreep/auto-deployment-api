@@ -676,6 +676,57 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/system/update": {
+            "post": {
+                "security": [
+                    {
+                        "X-Token": []
+                    }
+                ],
+                "description": "You can update stack only using name of stack",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Update stack by name",
+                "parameters": [
+                    {
+                        "description": "Body Input",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/portainer_api.RequestInputUpdateStack"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BadRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.InternalServerError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -754,6 +805,15 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "exampleusername"
+                }
+            }
+        },
+        "portainer_api.RequestInputUpdateStack": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "mystack"
                 }
             }
         },

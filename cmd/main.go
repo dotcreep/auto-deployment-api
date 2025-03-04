@@ -104,6 +104,7 @@ func main() {
 		r.Get("/stack", portainer_api.GetStack)           // Docs
 		r.Post("/status", portainer_api.GetStatusOfStack) // Docs
 		r.Post("/is-not-exists", portainer_api.GetStackIsNotExists)
+		r.Post("/update", portainer_api.UpdateStackByName)
 	})
 	r.Route("/api/v1/mobile", func(r chi.Router) {
 		r.Use(KeyMiddlewareTwo)

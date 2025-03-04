@@ -160,17 +160,17 @@ func DeployJenkins(ctx context.Context, data *jenkins.JenkinsData, domain string
 		}
 	}
 	for i, v := range data.JenkinsItem.Builders {
-		if strings.Contains(v.Command, "client-x") {
-			newName := strings.ReplaceAll(
-				v.Command, "client-x", fmt.Sprintf("client-%s", data.Username),
-			)
-			data.JenkinsItem.Builders[i].Command = newName
-		}
 		if strings.Contains(v.Command, "{{username}}") {
 			apkName := strings.ReplaceAll(
 				v.Command, "{{username}}", data.Username,
 			)
 			data.JenkinsItem.Builders[i].Command = apkName
+		}
+		if strings.Contains(v.Command, "client-x") {
+			newName := strings.ReplaceAll(
+				v.Command, "client-x", fmt.Sprintf("client-%s", data.Username),
+			)
+			data.JenkinsItem.Builders[i].Command = newName
 		}
 	}
 	job, _ := connect.GetJobOperation(data, "DetailStatus")
